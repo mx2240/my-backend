@@ -1,7 +1,12 @@
 // api/index.js
+const express = require("express");
 
-// Import your Express app
-const app = require("../app"); // make sure this path points to your app.js
+const app = express();
 
-// Export the app for Vercel serverless
+// Simple test route
+app.get("/api", (req, res) => {
+    res.json({ message: "✅ Serverless API is running!" });
+});
+
+// Export app for Vercel
 module.exports = app;
