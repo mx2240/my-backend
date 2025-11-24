@@ -16,12 +16,25 @@ const app = express();
 // ===========================
 // Middleware
 // ===========================
-app.use(require("cors")({
-    origin: "https://my-frontend-brown-eta.vercel.app/", // Or your frontend URL
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+const allowedOrigins = [
+    "http://localhost:5173", // local Vite dev
+    "https://my-frontend-brown-eta.vercel.app"
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // allow non-browser requests
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = "The CORS policy for this site does not allow access from the specified Origin.";
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
 }));
+
+
+
 
 app.use(express.json());
 
