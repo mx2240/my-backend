@@ -1,7 +1,6 @@
 // middleware/authMiddleware.js
 
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 const Student = require("../models/Student");
 
 // ---------------------------
