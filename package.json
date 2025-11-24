@@ -1,10 +1,10 @@
 {
   "name": "express-app",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "dev-local": "vercel dev",
-    "abass": " nodemon app.js"
+    "dev-local": "node server.js",
+    "start": " node server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

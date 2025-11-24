@@ -1,12 +1,15 @@
-// // // // app.js
+// app.js
 const express = require("express");
 const dotenv = require("dotenv");
-// const serverless = require("serverless-http");
 const connectDB = require("./config/db");
 
-// Load env variables
+// Load environment variables
 dotenv.config();
-connectDB();
+
+// Connect to MongoDB
+connectDB()
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.error("MongoDB connection error:", err));
 
 // Import routes
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
@@ -32,25 +35,21 @@ const adminSettingsRoutes = require("./routes/adminSettingsRoutes");
 const adminProfileRoutes = require("./routes/adminProfileRoutes");
 const adminStudentRoutes = require("./routes/adminStudentRoutes");
 const gradeRoutes = require("./routes/gradeRoutes");
-const UserRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes"); // optional additional routes
 
-// Init Express
+// Initialize Express
 const app = express();
 
-// ===========================
 // Middleware
-// ===========================
 app.use(express.json());
 app.use(require("cors")({
-    origin: "https://my-frontend-brown-eta.vercel.app/", // Or your frontend URL
+    origin: "https://my-frontend-brown-eta.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// ===========================
-// API Routes
-// ===========================
+// Mount API Routes
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/student", studentRoutes);
@@ -60,30 +59,26 @@ app.use("/api/announcements", announcementRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/fees", feesRoutes);
-app.use("/api/attendance", attendanceRoutes); // General attendance
-app.use("/api/attendance/bus", busAttendanceRoutes); // Bus attendance
+app.use("/api/attendance", attendanceRoutes); // general attendance
+app.use("/api/attendance/bus", busAttendanceRoutes); // bus attendance
 app.use("/api/timetable", timetableRoutes);
 app.use("/api/library", libraryRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/hostels", hostelRoutes);
-app.use("/api/parents", parentRoutes); // Parent routes
+app.use("/api/parents", parentRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin/settings", adminSettingsRoutes);
 app.use("/api/admin/profile", adminProfileRoutes);
 app.use("/api/admin/students", adminStudentRoutes);
-
-// Auth routes (login/register)
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes); // optional additional user routes
 
-// Root
-// Root test route for serverless
-app.get("/api", (req, res) => {
+// Root route for health check
+app.get("/", (req, res) => {
     res.json({ message: "✅ School API running successfully" });
 });
-
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -91,8 +86,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: "Internal server error", error: err.message });
 });
 
-// Export app for serverless
+
+
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+
+
+
 module.exports = app;
-
-
-
