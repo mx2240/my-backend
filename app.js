@@ -1,7 +1,7 @@
 // // app.js
 // const express = require("express");
 // const dotenv = require("dotenv");
-// const serverless = require("serverless-http");
+// // const serverless = require("serverless-http");
 // const connectDB = require("./config/db");
 
 // // Load env variables
@@ -110,7 +110,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(require("cors")({
-    origin: "*",
+    origin: "https://my-frontend-brown-eta.vercel.app/",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
