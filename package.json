@@ -24,7 +24,7 @@
     "nodemailer": "^7.0.10",
     "path": "^0.12.7",
     "serverless-http": "^3.2.0",
-    "vercel": "^48.10.10"
+    "vercel": "^41.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
