@@ -32,6 +32,7 @@ const adminSettingsRoutes = require("./routes/adminSettingsRoutes");
 const adminProfileRoutes = require("./routes/adminProfileRoutes");
 const adminStudentRoutes = require("./routes/adminStudentRoutes");
 const gradeRoutes = require("./routes/gradeRoutes");
+const UserRoutes = require("./routes/userRoutes");
 
 // Init Express
 const app = express();
@@ -54,24 +55,27 @@ app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/grades", gradeRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/attendance", attendanceRoutes);
-app.use("/api/attendance/bus", busAttendanceRoutes);
+app.use("/api/fees", feesRoutes);
+app.use("/api/attendance", attendanceRoutes); // General attendance
+app.use("/api/attendance/bus", busAttendanceRoutes); // Bus attendance
 app.use("/api/timetable", timetableRoutes);
 app.use("/api/library", libraryRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/hostels", hostelRoutes);
-app.use("/api/parents", parentRoutes);
+app.use("/api/parents", parentRoutes); // Parent routes
 app.use("/api/reports", reportRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin/settings", adminSettingsRoutes);
 app.use("/api/admin/profile", adminProfileRoutes);
 app.use("/api/admin/students", adminStudentRoutes);
-app.use("/api/fees", feesRoutes);
-app.use("/api/grades", gradeRoutes);
+
+// Auth routes (login/register)
 app.use("/api/auth", authRoutes);
 
 // Root
