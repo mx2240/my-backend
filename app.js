@@ -16,10 +16,13 @@ const app = express();
 // ===========================
 // Middleware
 // ===========================
-app.use(cors({
-    origin: process.env.FRONTEND_URL || "*",
-    credentials: true
+app.use(require("cors")({
+    origin: "https://my-frontend-brown-eta.vercel.app/", // Or your frontend URL
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 app.use(express.json());
 
 // ===========================
