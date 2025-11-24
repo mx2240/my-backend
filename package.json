@@ -4,8 +4,7 @@
   "main": "app.js",
   "scripts": {
     "dev-local": "vercel dev",
-    "abass": "node app.js",
-    "start": "node app.js"
+    "abass": " node app.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

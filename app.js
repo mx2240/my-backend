@@ -1,4 +1,4 @@
-// // app.js
+// // // // app.js
 const express = require("express");
 const dotenv = require("dotenv");
 // const serverless = require("serverless-http");
@@ -75,9 +75,11 @@ app.use("/api/grades", gradeRoutes);
 app.use("/api/auth", authRoutes);
 
 // Root
-app.get("/", (req, res) => {
+// Root test route for serverless
+app.get("/api", (req, res) => {
     res.json({ message: "✅ School API running successfully" });
 });
+
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -87,5 +89,6 @@ app.use((err, req, res, next) => {
 
 // Export app for serverless
 module.exports = app;
+
 
 
