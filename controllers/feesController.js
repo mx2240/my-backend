@@ -80,4 +80,23 @@ async function updateFeeStatus(req, res) {
     }
 }
 
-module.exports = { createFee, assignFee, getStudentsWithFees, updateFeeStatus };
+
+async function getAllFees(req, res) {
+    try {
+        const fees = await Fee.find().sort({ createdAt: -1 }).lean();
+        res.json({ ok: true, fees });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: err.message });
+    }
+}
+
+
+module.exports = {
+    createFee,
+    assignFee,
+    getStudentsWithFees,
+    updateFeeStatus,
+    getAllFees
+};
+
