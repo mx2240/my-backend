@@ -1,11 +1,12 @@
-
-
 const express = require("express");
 const router = express.Router();
-const { createStudent, getStudents } = require("../controllers/studentsController");
-const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 
-router.post("/", verifyToken, verifyAdmin, createStudent);
-router.get("/", verifyToken, getStudents);
+const { addStudent, getStudents } = require("../controllers/studentController");
+
+// POST add student
+router.post("/", addStudent);
+
+// GET all students
+router.get("/", getStudents);
+
 module.exports = router;
-
