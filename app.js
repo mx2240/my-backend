@@ -47,7 +47,7 @@ app.use(express.json());
 // ===========================
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
 const courseRoutes = require("./routes/coursesRoutes");
-const studentRoutes = require("./routes/studentsRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const announcementRoutes = require("./routes/announcementRoutes");
 const inquiryRoutes = require("./routes/inquiryRoutes");
