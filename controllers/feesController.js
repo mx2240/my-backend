@@ -1,71 +1,83 @@
-// controllers/feesController.js
 const Fee = require("../models/Fee");
-const FeeAssignment = require("../models/FeeAssignment"); // simple schema linking student+fee
+const FeeAssignment = require("../models/FeeAssignment");
 const Student = require("../models/Student");
 
-exports.createFee = async (req, res) => {
+// --- Create a Fee ---
+async function createFee(req, res) {
     try {
         const { title, amount, description } = req.body;
+        if (!title || !amount) return res.status(400).json({ ok: false, message: "Title and amount required" });
+
         const fee = await Fee.create({ title, amount, description });
-        res.status(201).json({ ok: true, body: fee });
+        res.status(201).json({ ok: true, fee });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ ok: false, message: "Server error" });
+        res.status(500).json({ ok: false, message: err.message });
     }
-};
+}
 
-exports.getFees = async (req, res) => {
-    try {
-        const fees = await Fee.find().lean();
-        res.json({ ok: true, body: fees });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ ok: false, message: "Server error" });
-    }
-};
-
-exports.assignFee = async (req, res) => {
+// --- Assign Fee to Student ---
+async function assignFee(req, res) {
     try {
         const { studentId, feeId } = req.body;
-        const s = await Student.findById(studentId);
-        if (!s) return res.status(404).json({ ok: false, message: "Student not found" });
-        const created = await FeeAssignment.create({ student: studentId, fee: feeId, status: "unpaid" });
-        res.status(201).json({ ok: true, body: created });
-    } catch (err) {
-        console.error(err);
-        if (err.code === 11000) return res.status(400).json({ ok: false, message: "Already assigned" });
-        res.status(500).json({ ok: false, message: "Server error" });
-    }
-};
+        if (!studentId || !feeId) return res.status(400).json({ ok: false, message: "Student and Fee required" });
 
-exports.getAssigned = async (req, res) => {
-    try {
-        const list = await FeeAssignment.find().populate("student", "name email").populate("fee").lean();
-        res.json({ ok: true, body: list });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ ok: false, message: "Server error" });
-    }
-};
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ ok: false, message: "Student not found" });
 
-exports.markPaid = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updated = await FeeAssignment.findByIdAndUpdate(id, { status: "paid" }, { new: true });
-        if (!updated) return res.status(404).json({ ok: false, message: "Not found" });
-        res.json({ ok: true, body: updated });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ ok: false, message: "Server error" });
-    }
-};
+        const fee = await Fee.findById(feeId);
+        if (!fee) return res.status(404).json({ ok: false, message: "Fee not found" });
 
-exports.deleteFee = async (req, res) => {
-    try {
-        await Fee.findByIdAndDelete(req.params.id);
-        res.json({ ok: true, message: "Deleted" });
+        // Prevent duplicate assignments
+        const exists = await FeeAssignment.findOne({ student: studentId, fee: feeId });
+        if (exists) return res.status(400).json({ ok: false, message: "Fee already assigned to student" });
+
+        const assignment = await FeeAssignment.create({ student: studentId, fee: feeId });
+        res.status(201).json({ ok: true, assignment });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ ok: false, message: "Server error" });
+        res.status(500).json({ ok: false, message: err.message });
     }
-};
+}
+
+// --- Get All Students with Fee Assignments ---
+async function getStudentsWithFees(req, res) {
+    try {
+        const students = await Student.find().lean();
+        const assignments = await FeeAssignment.find().populate("fee").lean();
+
+        // Map fees to students
+        const result = students.map(s => {
+            const fees = assignments.filter(a => a.student.toString() === s._id.toString());
+            return { ...s, fees };
+        });
+
+        res.json({ ok: true, students: result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: err.message });
+    }
+}
+
+// --- Update Fee Status (Paid/Unpaid) ---
+async function updateFeeStatus(req, res) {
+    try {
+        const { assignmentId, status } = req.body;
+        if (!["paid", "unpaid"].includes(status)) return res.status(400).json({ ok: false, message: "Invalid status" });
+
+        const assignment = await FeeAssignment.findByIdAndUpdate(
+            assignmentId,
+            { status },
+            { new: true }
+        ).populate("student fee");
+
+        if (!assignment) return res.status(404).json({ ok: false, message: "Assignment not found" });
+
+        res.json({ ok: true, assignment });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: err.message });
+    }
+}
+
+module.exports = { createFee, assignFee, getStudentsWithFees, updateFeeStatus };
