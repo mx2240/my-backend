@@ -1,41 +1,66 @@
+// controllers/enrollmentController.js
 const Enrollment = require("../models/Enrollment");
 const Student = require("../models/Student");
 const Course = require("../models/Course");
 
-exports.enrollStudent = async (req, res) => {
-    const { studentId, courseId } = req.body;
-
-    if (!studentId || !courseId)
-        return res.status(400).json({ ok: false, message: "Student and course are required" });
-
+exports.adminEnroll = async (req, res) => {
     try {
-        const student = await Student.findById(studentId);
-        if (!student) return res.status(404).json({ ok: false, message: "Student not found" });
+        const { studentId, courseId } = req.body;
+        const s = await Student.findById(studentId);
+        const c = await Course.findById(courseId);
+        if (!s || !c) return res.status(404).json({ ok: false, message: "Student or course not found" });
 
-        const course = await Course.findById(courseId);
-        if (!course) return res.status(404).json({ ok: false, message: "Course not found" });
-
-        // Check if already enrolled
-        const existing = await Enrollment.findOne({ student: studentId, course: courseId });
-        if (existing) return res.status(400).json({ ok: false, message: "Student already enrolled" });
-
-        const enrollment = await Enrollment.create({ student: studentId, course: courseId });
-        res.json({ ok: true, message: "Student enrolled successfully", enrollment });
+        const e = await Enrollment.create({ student: studentId, course: courseId });
+        res.status(201).json({ ok: true, body: e });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ ok: false, message: err.message });
+        if (err.code === 11000) return res.status(400).json({ ok: false, message: "Already enrolled" });
+        res.status(500).json({ ok: false, message: "Server error" });
     }
 };
 
 exports.getAllEnrollments = async (req, res) => {
     try {
-        const enrollments = await Enrollment.find()
-            .populate("student", "name email")
-            .populate("course", "title")
-            .sort({ createdAt: -1 });
-        res.json({ ok: true, enrollments });
+        const list = await Enrollment.find().populate("student", "name email").populate("course", "title").lean();
+        res.json({ ok: true, body: list });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ ok: false, message: err.message });
+        res.status(500).json({ ok: false, message: "Server error" });
+    }
+};
+
+// Student endpoints (optional)
+exports.enrollStudent = async (req, res) => {
+    try {
+        const studentId = req.user.id; // if student user maps to Student doc, adjust accordingly
+        const courseId = req.params.courseId;
+        const e = await Enrollment.create({ student: studentId, course: courseId });
+        res.status(201).json({ ok: true, body: e });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: "Server error" });
+    }
+};
+
+exports.dropCourse = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+        const courseId = req.params.courseId;
+        await Enrollment.deleteOne({ student: studentId, course: courseId });
+        res.json({ ok: true, message: "Dropped" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: "Server error" });
+    }
+};
+
+exports.getMyCourses = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+        const list = await Enrollment.find({ student: studentId }).populate("course").lean();
+        res.json({ ok: true, body: list });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ ok: false, message: "Server error" });
     }
 };
