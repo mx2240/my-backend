@@ -1,11 +1,11 @@
 const express = require("express");
 
 const router = express.Router();
-
-const { addStudent, getStudents } = require("../controllers/studentController");
+const { createStudent, getStudents } = require("../controllers/studentsController");
+// const { addStudent, getStudents } = require("../controllers/studentController");
 
 // POST add student
-router.post("/", addStudent);
+router.post("/", createStudent);
 
 // GET all students
 router.get("/", getStudents);
