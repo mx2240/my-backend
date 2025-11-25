@@ -74,7 +74,7 @@ const gradeRoutes = require("./routes/gradeRoutes");
 // ===========================
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/courses", courseRoutes);
-app.use("/api/student", studentRoutes);
+app.use("/api/students", studentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/grades", gradeRoutes);
 app.use("/api/announcements", announcementRoutes);
