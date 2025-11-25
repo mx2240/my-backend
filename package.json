@@ -8,21 +8,22 @@
     "dev-local": "vercel dev"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongodb": "^6.17.0",
-    "mongoose": "^8.16.4",
+    "mongoose": "^8.20.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "path": "^0.12.7",
-    "serverless-http": "^3.0.0",
-    "vercel": "^44.5.0"
+    "serverless-http": "^3.2.0",
+    "vercel": "^41.0.2"
   },
   "repository": {
     "type": "git",
