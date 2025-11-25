@@ -7,7 +7,7 @@ const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 router.post("/create", verifyToken, verifyAdmin, createCourse);
 
 // Get all courses (any logged-in user)
-router.get("/", getCourses);
+router.get("/", verifyToken, getCourses);
 
 // Admin: Delete course
 router.delete("/:id", verifyToken, verifyAdmin, deleteCourse);
