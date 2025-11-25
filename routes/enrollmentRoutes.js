@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { adminEnroll, getAllEnrollments } = require("../controllers/enrollmentController");
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+const { enrollStudent, getAllEnrollments } = require("../controllers/enrollmentController");
 
-// Admin-only routes
-router.post("/admin/enroll", verifyToken, verifyAdmin, adminEnroll);
+// Admin enrollment
+router.post("/admin/enroll", verifyToken, verifyAdmin, enrollStudent);
+
+// Get all enrollments (admin)
 router.get("/", verifyToken, verifyAdmin, getAllEnrollments);
 
 module.exports = router;
