@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema(
     {
-        fullName: { type: String, required: true },
+        name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        studentId: { type: String, required: true, unique: true }, // Reg No / Index No
-        classLevel: { type: String, required: true },
-        phone: { type: String },
+        classLevel: { type: String, default: "" },   // fix
+        studentClass: { type: String, default: "" },
+        phone: { type: String, default: "" }
     },
     { timestamps: true }
 );
