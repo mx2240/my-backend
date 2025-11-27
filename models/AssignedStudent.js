@@ -1,25 +1,26 @@
 const mongoose = require("mongoose");
 
-const AssignedFeeSchema = new mongoose.Schema({
-    fee: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Fee",
-        required: true,
+const AssignedStudentSchema = new mongoose.Schema(
+    {
+        student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Student",
+            required: true,
+        },
+        fee: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Fee",
+            required: true,
+        },
+        status: {
+            type: String,
+            enum: ["pending", "paid"],
+            default: "pending",
+        },
     },
-    student: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Student",
-        required: true,
-    },
-    status: {
-        type: String,
-        enum: ["paid", "unpaid"],
-        default: "unpaid",
-    },
-    assignedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+    { timestamps: true }
+);
 
-module.exports = mongoose.model("AssignedFee", AssignedFeeSchema);
+module.exports =
+    mongoose.models.AssignedStudent ||
+    mongoose.model("AssignedStudent", AssignedStudentSchema);

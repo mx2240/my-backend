@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const {
     createFee,
     getFees,
@@ -10,21 +9,14 @@ const {
     getMyFees,
 } = require("../controllers/feesController");
 
-// import actual middleware
-const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+const { verifyToken, verifyAdmin, verifyStudent } = require("../middleware/authMiddleware");
 
-// map them to old names so your code still works
-const protect = verifyToken;
-const admin = verifyAdmin;
+router.get("/my/fees", verifyToken, verifyStudent, getMyFees);
 
-// Admin routes
-router.post("/", protect, admin, createFee);
-router.get("/", protect, admin, getFees);
-router.get("/:id", protect, admin, getFeeById);
-router.put("/:id", protect, admin, updateFee);
-router.delete("/:id", protect, admin, deleteFee);
-
-// Student route
-router.get("/my/fees", protect, getMyFees);
+router.post("/", verifyToken, verifyAdmin, createFee);
+router.get("/", verifyToken, verifyAdmin, getFees);
+router.get("/:id", verifyToken, verifyAdmin, getFeeById);
+router.put("/:id", verifyToken, verifyAdmin, updateFee);
+router.delete("/:id", verifyToken, verifyAdmin, deleteFee);
 
 module.exports = router;
