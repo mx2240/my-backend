@@ -6,7 +6,8 @@ const {
     assignFee,
     getStudentsWithFees,
     updateFeeStatus,
-    getAllFees
+    getAllFees,
+    deleteFee
 
 } = require("../controllers/feesController");
 
@@ -16,6 +17,9 @@ router.post("/assign", verifyToken, verifyAdmin, assignFee);
 router.get("/students", verifyToken, verifyAdmin, getStudentsWithFees);
 router.put("/status", verifyToken, verifyAdmin, updateFeeStatus);
 router.get("/all", verifyToken, verifyAdmin, getAllFees);
+router.get("/", verifyToken, verifyAdmin, getAllFees);
+router.delete("/:id", verifyToken, verifyAdmin, deleteFee);
+
 
 
 
