@@ -2,13 +2,14 @@ const mongoose = require("mongoose");
 
 const PaymentSchema = new mongoose.Schema(
     {
-        student: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        studentFee: { type: mongoose.Schema.Types.ObjectId, ref: "StudentFee", required: true },
-        amountPaid: { type: Number, required: true },
-        paymentMethod: { type: String, default: "manual" },    // cash / bank / momo
-        reference: { type: String }                            // transaction ID
+        student: { type: mongoose.Schema.Types.ObjectId, ref: "Student", required: true },
+        fee: { type: mongoose.Schema.Types.ObjectId, ref: "Fee", required: true },
+        amount: Number,
+        transactionId: String,
+        status: { type: String, default: "successful" },
     },
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Payment", PaymentSchema);
+module.exports =
+    mongoose.models.Payment || mongoose.model("Payment", PaymentSchema);
