@@ -1,12 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const { getSettings, updateSettings } = require("../controllers/adminSettingsController");
-const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+const router = require("express").Router();
+const { verifyToken } = require("../middleware/authMiddleware");
+const { getMe, updateProfile, changePassword } = require("../controllers/adminSettingsController");
 
-// GET current settings
-router.get("/", verifyToken, verifyAdmin, getSettings);
-
-// UPDATE settings
-router.put("/", verifyToken, verifyAdmin, updateSettings);
+router.get("/me", verifyToken, getMe);
+router.put("/update-profile", verifyToken, updateProfile);
+router.post("/change-password", verifyToken, changePassword);
 
 module.exports = router;
