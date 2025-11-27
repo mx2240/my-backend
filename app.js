@@ -95,6 +95,8 @@ app.use("/api/admin/settings", adminSettingsRoutes);
 app.use("/api/admin/profile", adminProfileRoutes);
 app.use("/api/admin/students", adminStudentRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", require("./routes/adminSettingsRoutes"));
+
 
 // ===========================
 // Root Route

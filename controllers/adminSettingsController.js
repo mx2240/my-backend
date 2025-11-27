@@ -1,35 +1,55 @@
-const AdminSettings = require("../models/AdminSettings");
+const bcrypt = require("bcryptjs");
+const User = require("../models/user");
 
-// GET current settings
-exports.getSettings = async (req, res) => {
+// GET LOGGED-IN USER
+exports.getMe = async (req, res) => {
     try {
-        let settings = await AdminSettings.findOne();
-        if (!settings) {
-            // create default if not exists
-            settings = await AdminSettings.create({});
-        }
-        res.json({ settings });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error", error: error.message });
+        const user = await User.findById(req.user.id).select("-password");
+        if (!user) return res.status(404).json({ ok: false, message: "User not found" });
+
+        return res.json({ ok: true, user });
+    } catch (err) {
+        console.log("getMe error:", err);
+        return res.status(500).json({ ok: false, message: "Server error" });
     }
 };
 
-// UPDATE settings
-exports.updateSettings = async (req, res) => {
+// UPDATE PROFILE
+exports.updateProfile = async (req, res) => {
     try {
-        const { notifications, darkMode } = req.body;
-        let settings = await AdminSettings.findOne();
-        if (!settings) {
-            settings = await AdminSettings.create({ notifications, darkMode });
-        } else {
-            settings.notifications = notifications;
-            settings.darkMode = darkMode;
-            await settings.save();
-        }
-        res.json({ message: "Settings updated", settings });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error", error: error.message });
+        const { name, email } = req.body;
+
+        const updated = await User.findByIdAndUpdate(
+            req.user.id,
+            { name, email },
+            { new: true }
+        ).select("-password");
+
+        return res.json({ ok: true, user: updated });
+    } catch (err) {
+        console.log("updateProfile error:", err);
+        return res.status(500).json({ ok: false, message: "Server error" });
+    }
+};
+
+// CHANGE PASSWORD
+exports.changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ ok: false, message: "User not found" });
+
+        const match = await bcrypt.compare(currentPassword, user.password);
+        if (!match) return res.status(400).json({ ok: false, message: "Wrong current password" });
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+        user.password = hashed;
+        await user.save();
+
+        return res.json({ ok: true, message: "Password updated successfully" });
+    } catch (err) {
+        console.log("changePassword error:", err);
+        return res.status(500).json({ ok: false, message: "Server error" });
     }
 };
