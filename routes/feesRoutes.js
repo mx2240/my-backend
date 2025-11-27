@@ -1,30 +1,30 @@
 const express = require("express");
 const router = express.Router();
+
 const {
     createFee,
     getFees,
-    assignFee,
-    getAssignedStudents,
-    updatePaymentStatus,
-    deleteFee
+    getFeeById,
+    updateFee,
+    deleteFee,
+    getMyFees,
 } = require("../controllers/feesController");
 
-// Create fee
-router.post("/", createFee);
+// import actual middleware
+const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 
-// Get all fees
-router.get("/", getFees);
+// map them to old names so your code still works
+const protect = verifyToken;
+const admin = verifyAdmin;
 
-// Assign fee to students
-router.post("/:feeId/assign", assignFee);
+// Admin routes
+router.post("/", protect, admin, createFee);
+router.get("/", protect, admin, getFees);
+router.get("/:id", protect, admin, getFeeById);
+router.put("/:id", protect, admin, updateFee);
+router.delete("/:id", protect, admin, deleteFee);
 
-// Get all students assigned to a fee
-router.get("/:feeId/assigned", getAssignedStudents);
-
-// Update payment status
-router.put("/:feeId/status/:studentId", updatePaymentStatus);
-
-// Delete fee
-router.delete("/:id", deleteFee);
+// Student route
+router.get("/my/fees", protect, getMyFees);
 
 module.exports = router;
