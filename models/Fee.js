@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const feeSchema = new mongoose.Schema({
+const FeeSchema = new mongoose.Schema({
     title: { type: String, required: true },
     amount: { type: Number, required: true },
-    description: { type: String, default: "" },
+    description: { type: String },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Fee", feeSchema);
+module.exports = mongoose.model("Fee", FeeSchema);

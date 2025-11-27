@@ -1,122 +1,111 @@
-// controllers/feeController.js
 const Fee = require("../models/Fee");
-const Student = require("../models/Student");
+const AssignedStudent = require("../models/AssignedStudent");
 
 // Create Fee
-exports.createFee = async (req, res) => {
+const createFee = async (req, res) => {
     try {
-        const { title, amount } = req.body;
+        const { title, amount, dueDate } = req.body;
 
         if (!title || !amount) {
-            return res.status(400).json({ ok: false, message: "Title & amount required" });
+            return res.status(400).json({ message: "Title and amount are required" });
         }
 
-        const fee = await Fee.create({ title, amount });
+        const fee = new Fee({ title, amount, dueDate });
+        await fee.save();
 
-        return res.status(201).json({ ok: true, message: "Fee created", fee });
+        res.status(201).json({ message: "Fee created successfully", fee });
     } catch (error) {
-        console.error("Create fee error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
+        console.error("Create Fee Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
-// Get All Fees
-exports.getFees = async (req, res) => {
+// Get all fees
+const getFees = async (req, res) => {
     try {
         const fees = await Fee.find().sort({ createdAt: -1 });
-
         res.json({ ok: true, fees });
     } catch (error) {
-        console.error("Fetch fees error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
+        console.error("Get Fees Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
-// Assign Fee to Students
-exports.assignFee = async (req, res) => {
+// Get a single fee
+const getFeeById = async (req, res) => {
     try {
-        const { feeId } = req.params;
-        const { students } = req.body; // array of student IDs
+        const fee = await Fee.findById(req.params.id);
 
-        if (!students || students.length === 0) {
-            return res.status(400).json({ ok: false, message: "No students selected" });
+        if (!fee) {
+            return res.status(404).json({ message: "Fee not found" });
         }
 
-        const fee = await Fee.findById(feeId);
-        if (!fee) return res.status(404).json({ ok: false, message: "Fee not found" });
-
-        students.forEach((id) => {
-            if (!fee.assignedStudents.some((s) => s.student.toString() === id)) {
-                fee.assignedStudents.push({
-                    student: id,
-                    status: "unpaid"
-                });
-            }
-        });
-
-        await fee.save();
-
-        res.json({ ok: true, message: "Students assigned successfully" });
+        res.json({ ok: true, fee });
     } catch (error) {
-        console.error("Assign fee error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
+        console.error("Get Fee Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
-// Get Assigned Students for a Fee
-exports.getAssignedStudents = async (req, res) => {
+// Update Fee
+const updateFee = async (req, res) => {
     try {
-        const { feeId } = req.params;
+        const { title, amount, dueDate } = req.body;
 
-        const fee = await Fee.findById(feeId).populate("assignedStudents.student");
-
-        if (!fee) return res.status(404).json({ ok: false, message: "Fee not found" });
-
-        res.json({ ok: true, assignedStudents: fee.assignedStudents });
-    } catch (error) {
-        console.error("Get assigned students error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
-    }
-};
-
-// Update Payment Status (paid/unpaid)
-exports.updatePaymentStatus = async (req, res) => {
-    try {
-        const { feeId, studentId } = req.params;
-        const { status } = req.body; // "paid" or "unpaid"
-
-        const fee = await Fee.findById(feeId);
-        if (!fee) return res.status(404).json({ ok: false, message: "Fee not found" });
-
-        const studentEntry = fee.assignedStudents.find(
-            (s) => s.student.toString() === studentId
+        const fee = await Fee.findByIdAndUpdate(
+            req.params.id,
+            { title, amount, dueDate },
+            { new: true }
         );
 
-        if (!studentEntry) {
-            return res.status(404).json({ ok: false, message: "Student not assigned" });
+        if (!fee) {
+            return res.status(404).json({ message: "Fee not found" });
         }
 
-        studentEntry.status = status;
-        await fee.save();
-
-        res.json({ ok: true, message: "Status updated" });
+        res.json({ message: "Fee updated successfully", fee });
     } catch (error) {
-        console.error("Update status error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
+        console.error("Update Fee Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
-// Delete a fee
-exports.deleteFee = async (req, res) => {
+// Delete Fee
+const deleteFee = async (req, res) => {
     try {
-        const { id } = req.params;
+        const fee = await Fee.findByIdAndDelete(req.params.id);
 
-        const fee = await Fee.findByIdAndDelete(id);
-        if (!fee) return res.status(404).json({ ok: false, message: "Fee not found" });
+        if (!fee) {
+            return res.status(404).json({ message: "Fee not found" });
+        }
 
-        res.json({ ok: true, message: "Fee deleted successfully" });
+        res.json({ message: "Fee deleted successfully" });
     } catch (error) {
-        console.error("Delete fee error:", error);
-        res.status(500).json({ ok: false, message: "Server error" });
+        console.error("Delete Fee Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
+};
+
+// Get fees assigned to a student
+const getMyFees = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+
+        const assigned = await AssignedStudent.find({ student: studentId })
+            .populate("fee");
+
+        res.json({ ok: true, assigned });
+    } catch (error) {
+        console.error("Get My Fees Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// EXPORT ALL FUNCTIONS
+module.exports = {
+    createFee,
+    getFees,
+    getFeeById,
+    updateFee,
+    deleteFee,
+    getMyFees,
 };
