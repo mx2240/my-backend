@@ -92,11 +92,22 @@ async function getAllFees(req, res) {
 }
 
 
+async function deleteFee(req, res) {
+    const id = req.params.id;
+
+    await Fee.findByIdAndDelete(id);
+    await FeeAssignment.deleteMany({ fee: id }); // clean linked records
+
+    res.json({ ok: true, message: "Fee deleted" });
+}
+
 module.exports = {
     createFee,
     assignFee,
     getStudentsWithFees,
     updateFeeStatus,
-    getAllFees
+    getAllFees,
+    deleteFee
 };
+
 
