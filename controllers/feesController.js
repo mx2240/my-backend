@@ -1,6 +1,8 @@
-const Fee = require("../models/Fee");
+// const Fee = require("../models/Fee");
 const FeeAssignment = require("../models/FeeAssignment");
 const Student = require("../models/Student");
+const Fee = require("../models/feeModel");
+
 
 // --- Create a Fee ---
 async function createFee(req, res) {
@@ -101,6 +103,59 @@ async function deleteFee(req, res) {
     res.json({ ok: true, message: "Fee deleted" });
 }
 
+
+// GET students assigned to a fee
+exports.getAssignedStudents = async (req, res) => {
+    try {
+        const feeId = req.params.feeId;
+
+        const fee = await Fee.findById(feeId).populate("assignedStudents.student");
+
+        if (!fee) {
+            return res.status(404).json({ message: "Fee not found" });
+        }
+
+        res.json({
+            ok: true,
+            assignedStudents: fee.assignedStudents
+        });
+    } catch (error) {
+        console.error("Get assigned students error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// Update paid/unpaid
+exports.updatePaymentStatus = async (req, res) => {
+    try {
+        const { feeId, studentId } = req.params;
+        const { status } = req.body; // "paid" or "unpaid"
+
+        const fee = await Fee.findById(feeId);
+        if (!fee) return res.status(404).json({ message: "Fee not found" });
+
+        const studentEntry = fee.assignedStudents.find(
+            (item) => item.student.toString() === studentId
+        );
+
+        if (!studentEntry)
+            return res.status(404).json({ message: "Student not assigned to fee" });
+
+        studentEntry.status = status;
+        await fee.save();
+
+        res.json({ ok: true, message: "Status updated" });
+    } catch (error) {
+        console.error("Update payment status error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+
+
+
+
 module.exports = {
     createFee,
     assignFee,
@@ -108,6 +163,7 @@ module.exports = {
     updateFeeStatus,
     getAllFees,
     deleteFee
+
 };
 
 
