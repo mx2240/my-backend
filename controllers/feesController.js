@@ -1,6 +1,6 @@
 // controllers/feeController.js
-const Fee = require("../models/feeModel");
-const Student = require("../models/studentModel");
+const Fee = require("../models/Fee");
+const Student = require("../models/Student");
 
 // Create Fee
 exports.createFee = async (req, res) => {
@@ -119,13 +119,4 @@ exports.deleteFee = async (req, res) => {
         console.error("Delete fee error:", error);
         res.status(500).json({ ok: false, message: "Server error" });
     }
-};
-
-module.exports = {
-    createFee,
-    getFees,
-    assignFee,
-    getAssignedStudents,
-    updatePaymentStatus,
-    deleteFee
 };
