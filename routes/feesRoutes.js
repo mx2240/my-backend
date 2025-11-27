@@ -1,26 +1,32 @@
+// routes/feesRoutes.js
 const express = require("express");
 const router = express.Router();
-const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+
 const {
     createFee,
+    getFees,
     assignFee,
-    getStudentsWithFees,
-    updateFeeStatus,
-    getAllFees,
+    getAssignedStudents,
+    updatePaymentStatus,
     deleteFee
+} = require("../controllers/feeController");
 
-} = require("../controllers/feesController");
+// Create new fee
+router.post("/", createFee);
 
-// --- Admin only ---
-router.post("/create", verifyToken, verifyAdmin, createFee);
-router.post("/assign", verifyToken, verifyAdmin, assignFee);
-router.get("/students", verifyToken, verifyAdmin, getStudentsWithFees);
-router.put("/status", verifyToken, verifyAdmin, updateFeeStatus);
-router.get("/all", verifyToken, verifyAdmin, getAllFees);
-router.get("/", verifyToken, verifyAdmin, getAllFees);
-router.delete("/:id", verifyToken, verifyAdmin, deleteFee);
+// Get all fees
+router.get("/", getFees);
 
+// Assign fee to students
+router.post("/:feeId/assign", assignFee);
 
+// Get all students assigned to a fee
+router.get("/:feeId/assigned", getAssignedStudents);
 
+// Update student fee payment status
+router.put("/:feeId/status/:studentId", updatePaymentStatus);
+
+// Delete a fee
+router.delete("/:id", deleteFee);
 
 module.exports = router;
