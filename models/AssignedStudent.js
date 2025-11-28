@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const AssignedStudentSchema = new mongoose.Schema(
+const assignedStudentSchema = new mongoose.Schema(
     {
         student: {
             type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +21,9 @@ const AssignedStudentSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports =
+// Prevent overwrite model error
+const AssignedStudent =
     mongoose.models.AssignedStudent ||
-    mongoose.model("AssignedStudent", AssignedStudentSchema);
+    mongoose.model("AssignedStudent", assignedStudentSchema);
+
+module.exports = AssignedStudent;
