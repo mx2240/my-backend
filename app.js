@@ -68,6 +68,7 @@ const adminSettingsRoutes = require("./routes/adminSettingsRoutes");
 const adminProfileRoutes = require("./routes/adminProfileRoutes");
 const adminStudentRoutes = require("./routes/adminStudentRoutes");
 const gradeRoutes = require("./routes/gradeRoutes");
+const assignFeeRouter = require("./routes/assignFeeRoutes");
 
 // ===========================
 // API Routes
@@ -95,8 +96,8 @@ app.use("/api/admin/settings", adminSettingsRoutes);
 app.use("/api/admin/profile", adminProfileRoutes);
 app.use("/api/admin/students", adminStudentRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/assign", require("./routes/assignRoutes"));
 app.use("/api/auth", require("./routes/adminSettingsRoutes"));
+app.use("/api/assign-fee", assignFeeRouter);
 
 
 
