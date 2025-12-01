@@ -69,6 +69,7 @@ const adminProfileRoutes = require("./routes/adminProfileRoutes");
 const adminStudentRoutes = require("./routes/adminStudentRoutes");
 const gradeRoutes = require("./routes/gradeRoutes");
 const assignFeeRouter = require("./routes/assignFeeRoutes");
+const studentAuthRoutes = require("./routes/studentAuthRoutes");
 
 // ===========================
 // API Routes
@@ -98,6 +99,7 @@ app.use("/api/admin/students", adminStudentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", require("./routes/adminSettingsRoutes"));
 app.use("/api/assign-fee", assignFeeRouter);
+app.use("/api/student", studentAuthRoutes);
 
 
 
@@ -129,3 +131,8 @@ if (require.main === module) {
 // Export for Vercel serverless
 // ===========================
 module.exports = app;
+
+
+
+
+
