@@ -122,56 +122,23 @@ async function getStudents(req, res) {
  */
 async function createStudent(req, res) {
     try {
-        const { name, email, studentClass = "", phone = "" } = req.body;
+        const { name, email, password = "123456", studentClass, phone } = req.body;
 
-        if (!name || !email) {
-            return res.status(400).json({ ok: false, message: "Name and email required" });
-        }
-
-        // Check if email already exists
         const exists = await Student.findOne({ email });
-        if (exists) {
-            return res.status(400).json({ ok: false, message: "Email already exists" });
-        }
+        if (exists) return res.status(400).json({ ok: false, message: "Email already taken" });
 
-        // 🔥 AUTO-GENERATE PASSWORD
-        const rawPassword = Math.random().toString(36).slice(-8); // Example: "a9hd73ks"
+        const hashed = await bcrypt.hash(password, 10);
 
-        // 🔥 HASH PASSWORD BEFORE SAVE
-        const hashedPassword = await bcrypt.hash(rawPassword, 10);
-
-        // Create student
         const student = await Student.create({
             name,
             email,
-            phone,
+            password: hashed,
             studentClass,
-            password: hashedPassword,
+            phone,
         });
 
-        return res.status(201).json({
-            ok: true,
-            message: "Student created successfully",
-            student,
-
-            // Login details for admin to give student
-            loginCredentials: {
-                email: email,
-                password: rawPassword,
-            },
-        });
-
+        return res.json({ ok: true, student });
     } catch (err) {
-        console.error("createStudent error:", err);
-
-        if (err.code === 11000) {
-            return res.status(400).json({
-                ok: false,
-                message: "Duplicate field value",
-                error: err.message,
-            });
-        }
-
         return res.status(500).json({ ok: false, message: "Server error", error: err.message });
     }
 }
