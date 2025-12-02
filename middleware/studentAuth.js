@@ -1,21 +1,37 @@
+const Student = require("../models/Student");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-module.exports = function (req, res, next) {
-    const token = req.header("Authorization")?.split(" ")[1];
-
-    if (!token) return res.status(401).json({ ok: false, message: "Access denied - No token" });
-
+exports.studentLogin = async (req, res) => {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { email, password } = req.body;
 
-        if (decoded.role !== "student") {
-            return res.status(403).json({ ok: false, message: "Forbidden - Not a student" });
-        }
+        if (!email || !password)
+            return res.status(400).json({ ok: false, message: "Email and password required" });
 
-        req.student = decoded;
-        next();
+        const student = await Student.findOne({ email });
+        if (!student)
+            return res.status(400).json({ ok: false, message: "Invalid email or password" });
+
+        const match = await bcrypt.compare(password, student.password);
+        if (!match)
+            return res.status(400).json({ ok: false, message: "Invalid email or password" });
+
+        const token = jwt.sign(
+            { id: student._id, role: "student" },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        return res.json({
+            ok: true,
+            message: "Login successful",
+            token,
+            student
+        });
 
     } catch (err) {
-        return res.status(401).json({ ok: false, message: "Invalid token" });
+        console.error("studentLogin error:", err);
+        return res.status(500).json({ ok: false, message: "Server error", error: err.message });
     }
 };
