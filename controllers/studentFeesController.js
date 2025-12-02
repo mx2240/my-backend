@@ -1,5 +1,5 @@
 const Fee = require("../models/Fee");
-const AssignFee = require("../models/AssignFee");
+const AssignFee = require("../models/AssignedStudent");
 const Student = require("../models/Student");
 
 exports.getMyFees = async (req, res) => {
