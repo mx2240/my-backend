@@ -1,5 +1,3 @@
-
-
 const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
@@ -12,11 +10,14 @@ module.exports = function (req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.student = decoded;
+
+        req.student = {
+            id: decoded.id,
+            email: decoded.email   // FIX HERE
+        };
+
         next();
     } catch (err) {
         return res.status(401).json({ ok: false, message: "Invalid or expired token" });
     }
 };
-
-
