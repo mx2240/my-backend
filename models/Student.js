@@ -4,9 +4,10 @@ const studentSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },  // REQUIRED for login
+        password: { type: String, required: true },  // login requires password
+        classLevel: { type: String, default: "" },
         studentClass: { type: String, default: "" },
-        phone: { type: String, default: "" }
+        phone: { type: String, default: "" },
     },
     { timestamps: true }
 );
