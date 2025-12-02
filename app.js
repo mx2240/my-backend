@@ -99,7 +99,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/auth", require("./routes/adminSettingsRoutes"));
 app.use("/api/assign-fee", assignFeeRouter);
 app.use("/api/student", studentAuthRoutes);
-app.use("/api/student/fees", studentFeesRoutes);
+app.use("/api/student", studentFeesRoutes);
 
 
 
