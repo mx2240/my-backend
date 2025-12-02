@@ -102,7 +102,7 @@ app.use("/api/student", studentAuthRoutes);
 app.use("/api/student", studentFeesRoutes);
 app.use("/api/student/profile", require("./routes/studentProfileRoutes"));
 app.use("/api/payments", require("./routes/paymentsRoutes"));
-app.use("/api/paystack", require("./routes/paystackRoutes"))
+
 
 
 
