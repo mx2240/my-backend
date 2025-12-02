@@ -52,4 +52,43 @@ router.post("/initiate", studentAuth, async (req, res) => {
     }
 });
 
+
+
+router.get("/verify", async (req, res) => {
+    try {
+        const { reference } = req.query;
+
+        if (!reference) {
+            return res.status(400).json({ ok: false, message: "Reference required" });
+        }
+
+        const response = await axios.get(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`
+                }
+            }
+        );
+
+        const data = response.data.data;
+
+        if (data.status !== "success") {
+            return res.status(400).json({ ok: false, message: "Payment failed" });
+        }
+
+        await AssignedStudent.findByIdAndUpdate(
+            data.metadata.assignedFeeId,
+            { status: "paid" }
+        );
+
+        return res.json({ ok: true, message: "Payment verified" });
+
+    } catch (err) {
+        console.error("VERIFY ERROR:", err.response?.data || err.message);
+        return res.status(500).json({ ok: false, message: "Server error" });
+    }
+});
+
+
 module.exports = router;
