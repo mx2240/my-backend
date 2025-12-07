@@ -4,10 +4,17 @@ const AssignedStudent = require("../models/AssignedStudent");
 // Create Fee
 const createFee = async (req, res) => {
     try {
-        const { title, amount, dueDate } = req.body;
-        const newFee = new Fee({ title, amount, dueDate });
-        await newFee.save();
-        res.status(201).json({ message: "Fee created successfully", fee: newFee });
+        const { title, amount, } = req.body;
+
+        if (!title || !amount) {
+            return res.status(400).json({ message: "Title and amount are required" });
+        }
+
+
+        if (res.data.ok || res.data.success) {
+            toast.success("Fee created successfully");
+        }
+
     } catch (error) {
         console.error("Create Fee Error:", error);
         res.status(500).json({ message: "Server error" });
