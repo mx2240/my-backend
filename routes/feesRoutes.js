@@ -20,3 +20,4 @@ router.put("/:id", verifyToken, verifyAdmin, updateFee);
 router.delete("/:id", verifyToken, verifyAdmin, deleteFee);
 
 module.exports = router;
+
