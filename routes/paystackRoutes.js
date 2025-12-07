@@ -48,3 +48,48 @@ router.get("/callback", async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+// const express = require("express");
+// const router = express.Router();
+// const AssignedFee = require("../models/AssignedStudent");
+// const axios = require("axios");
+// const auth = require("../middleware/authMiddleware");
+
+// router.post("/initiate", auth, async (req, res) => {
+//     try {
+//         const { assignedFeeId } = req.body;
+
+//         const assigned = await AssignedFee.findById(assignedFeeId).populate("fee");
+
+//         if (!assigned)
+//             return res.json({ ok: false, message: "Invalid assigned fee" });
+
+//         const paystackRes = await axios.post(
+//             "https://api.paystack.co/transaction/initialize",
+//             {
+//                 email: req.user.email,
+//                 amount: assigned.fee.amount * 100,
+//                 metadata: { assignedFeeId }
+//             },
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`
+//                 }
+//             }
+//         );
+
+//         res.json({
+//             ok: true,
+//             authorization_url: paystackRes.data.data.authorization_url
+//         });
+
+//     } catch (err) {
+//         res.json({ ok: false, message: "Payment init failed" });
+//     }
+// });
+
+// module.exports = router;
+
