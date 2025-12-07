@@ -41,15 +41,25 @@ const Student = require("../models/Student");
 
 exports.getMyFees = async (req, res) => {
     try {
-        const studentId = req.user.id; // JWT id
+        const studentId = req.user.id;
+
         const student = await Student.findById(studentId).lean();
-        if (!student) return res.status(404).json({ ok: false, message: "Student not found" });
+        if (!student) {
+            return res.status(404).json({ ok: false, message: "Student not found" });
+        }
 
-        const assigned = await AssignFee.find({ student: studentId }).populate("fee").sort({ createdAt: -1 }).lean();
+        let assigned = await AssignFee.find({ student: studentId })
+            .populate("fee")
+            .sort({ createdAt: -1 })
+            .lean();
 
-        res.json({ ok: true, fees: assigned });
+        // 🔥 Filter out broken records where fee = null
+        assigned = assigned.filter(item => item.fee !== null);
+
+        return res.json({ ok: true, fees: assigned });
     } catch (err) {
         console.error("getMyFees error:", err);
-        res.status(500).json({ ok: false, message: "Server error" });
+        return res.status(500).json({ ok: false, message: "Server error" });
     }
 };
+
