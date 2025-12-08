@@ -33,7 +33,7 @@ const router = express.Router();
 const { createEvent, getEvents } = require("../controllers/eventController");
 
 // ADMIN: ADD EVENT
-router.post("/create", createEvent);
+router.post("/", createEvent);
 
 // GET ALL EVENTS
 router.get("/", getEvents);
