@@ -35,7 +35,8 @@ const { updateEvent, deleteEvent } = require("../controllers/eventController");
 
 
 // ADMIN: ADD EVENT
-router.post("/", createEvent);
+router.post("/create", createEvent);
+
 
 // GET ALL EVENTS
 
