@@ -31,11 +31,16 @@
 const express = require("express");
 const router = express.Router();
 const { createEvent, getEvents } = require("../controllers/eventController");
+const { verifyToken, requireAdmin } = require("../middleware/verifyToken");
+const { deleteEvent } = require("../controllers/eventController");
 
 // ADMIN: ADD EVENT
 router.post("/", createEvent);
 
 // GET ALL EVENTS
 router.get("/", getEvents);
+
+// Delete event
+router.delete("/:id", verifyToken, requireAdmin, deleteEvent);
 
 module.exports = router;
