@@ -19,7 +19,7 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:5173", // local Vite dev
     "https://my-frontend-brown-eta.vercel.app",
-    "https://vite-react-delta-six-49.vercel.app/"
+    "https://vite-react-delta-six-49.vercel.app"
     // production frontend
 ];
 
