@@ -23,6 +23,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^7.0.11",
     "path": "^0.12.7",
     "serverless-http": "^3.2.0",
     "vercel": "^41.0.2"
