@@ -27,13 +27,15 @@ exports.forgotPassword = async (req, res) => {
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
         // EMAIL SENDER
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
+        var transporter = nodemailer.createTransport({
+            host: "sandbox.smtp.mailtrap.io",
+            port: 2525,
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
+                user: "8d67879ff1b33c",
+                pass: "0f88feb071b5eb"
+            }
         });
+
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
