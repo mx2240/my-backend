@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const User = require("../models/Student");
+const User = require("../models/user");
 const nodemailer = require("nodemailer");
 
 // SEND EMAIL FUNCTION
