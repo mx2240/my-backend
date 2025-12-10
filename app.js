@@ -108,6 +108,8 @@ app.use("/api/payments", require("./routes/paymentsRoutes"));
 app.use("/api/paystack", require("./routes/paystackRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/auth", passwordRoutes);
+app.use("/api/student/auth", require("./routes/StudentpaswordResetRoutes"));
+
 
 
 
