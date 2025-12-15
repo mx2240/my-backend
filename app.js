@@ -73,6 +73,7 @@ const assignFeeRouter = require("./routes/assignFeeRoutes");
 const studentAuthRoutes = require("./routes/studentAuthRoutes");
 const studentFeesRoutes = require("./routes/studentFeesRoutes");
 const passwordRoutes = require("./routes/passwordRoutes");
+const adminStatsRoutes = require("./routes/adminStatsRoutes");
 
 // ===========================
 // API Routes
@@ -109,6 +110,7 @@ app.use("/api/paystack", require("./routes/paystackRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/auth", passwordRoutes);
 app.use("/api/student/auth", require("./routes/studentAuthRoutes"));
+app.use("/api/admin", adminStatsRoutes);
 
 
 
