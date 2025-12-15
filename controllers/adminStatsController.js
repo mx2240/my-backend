@@ -1,75 +1,60 @@
 const Student = require("../models/Student");
+const Course = require("../models/Course");
 const Fee = require("../models/Fee");
 const AssignedFee = require("../models/AssignedStudent");
 
-exports.getDashboardStats = async (req, res) => {
+const getDashboardStats = async (req, res) => {
     try {
-        // ====== BASIC COUNTS ======
+        // Total counts
         const totalStudents = await Student.countDocuments();
-        const totalFees = await Fee.countDocuments();
-        const totalAssignedFees = await AssignedFee.countDocuments();
+        const totalCourses = await Course.countDocuments();
+        const totalEnrollments = await AssignedFee.countDocuments();
 
-        // ====== TOTAL REVENUE (PAID ONLY) ======
-        const revenueAgg = await AssignedFee.aggregate([
-            { $match: { status: "paid" } },
-            {
-                $group: {
-                    _id: null,
-                    total: { $sum: "$paidAmount" },
-                },
-            },
-        ]);
+        // Total fees collected
+        const fees = await AssignedFee.find({ status: "paid" }).populate("fee");
+        const totalFees = fees.reduce((acc, f) => acc + (f.fee?.amount || 0), 0);
 
-        const totalRevenue = revenueAgg[0]?.total || 0;
+        // Monthly trends (last 7 months)
+        const months = [];
+        const monthlyEnrollments = [];
+        const monthlyFees = [];
 
-        // ====== MONTHLY STUDENTS ======
-        const studentAgg = await Student.aggregate([
-            {
-                $group: {
-                    _id: { $month: "$createdAt" },
-                    count: { $sum: 1 },
-                },
-            },
-        ]);
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const monthStart = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() - i + 1, 0, 23, 59, 59);
 
-        // ====== MONTHLY REVENUE ======
-        const revenueMonthlyAgg = await AssignedFee.aggregate([
-            { $match: { status: "paid" } },
-            {
-                $group: {
-                    _id: { $month: "$createdAt" },
-                    total: { $sum: "$paidAmount" },
-                },
-            },
-        ]);
+            months.push(monthStart.toLocaleString("default", { month: "short" }));
 
-        // Normalize data to 12 months
-        const monthlyEnrollments = Array(12).fill(0);
-        studentAgg.forEach(i => {
-            monthlyEnrollments[i._id - 1] = i.count;
-        });
+            const enrollCount = await AssignedFee.countDocuments({
+                createdAt: { $gte: monthStart, $lte: monthEnd },
+            });
+            monthlyEnrollments.push(enrollCount);
 
-        const monthlyRevenue = Array(12).fill(0);
-        revenueMonthlyAgg.forEach(i => {
-            monthlyRevenue[i._id - 1] = i.total;
-        });
+            const paidFees = await AssignedFee.find({
+                status: "paid",
+                createdAt: { $gte: monthStart, $lte: monthEnd },
+            }).populate("fee");
+            const monthFees = paidFees.reduce((acc, f) => acc + (f.fee?.amount || 0), 0);
+            monthlyFees.push(monthFees);
+        }
 
         res.json({
             ok: true,
-            stats: {
+            data: {
                 totalStudents,
+                totalCourses,
+                totalEnrollments,
                 totalFees,
-                totalAssignedFees,
-                totalRevenue,
+                months,
                 monthlyEnrollments,
-                monthlyRevenue,
+                monthlyFees,
             },
         });
     } catch (err) {
-        console.error("Dashboard stats error:", err);
-        res.status(500).json({
-            ok: false,
-            message: "Failed to load dashboard stats",
-        });
+        console.error(err);
+        res.status(500).json({ ok: false, message: "Server error" });
     }
 };
+
+module.exports = { getDashboardStats };
