@@ -1,14 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
-const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 const { getDashboardStats } = require("../controllers/adminStatsController");
+const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 
-router.get(
-    "/dashboard-stats",
-    verifyToken,
-    verifyAdmin,
-    getDashboardStats
-);
+// Only admins can access
+router.get("/dashboard-stats", verifyToken, verifyAdmin, getDashboardStats);
 
 module.exports = router;
